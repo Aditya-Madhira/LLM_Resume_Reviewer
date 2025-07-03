@@ -1,20 +1,25 @@
 import streamlit as st
+import requests
 
 st.set_page_config(page_title="Resume Reviewer", page_icon="📄")
 
-st.title("Resume Reviewer")
+st.title("PDF Uploader and Submitter")
 
-st.write(
-    "Paste your resume text below and click **Analyze** to see it "
-    "displayed with a basic word count."
-)
+# 1. Upload PDF
+uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
-text = st.text_area("Resume Text", height=300)
-
-if st.button("Analyze"):
-    if text.strip():
-        st.subheader("You entered:")
-        st.write(text)
-        st.write(f"Word count: {len(text.split())}")
+# 2. Submit Button
+if st.button("Submit"):
+    if uploaded_file is not None:
+        # Read the file as bytes
+        files = {"file": (uploaded_file.name, uploaded_file, "application/pdf")}
+        # Send POST request to FastAPI backend
+        response = requests.post("http://localhost:8000/post-endpoint", files=files)
+        if response.status_code == 200:
+            st.success(response.json().get("message", "Success!"))
+        else:
+            st.error(f"Error: {response.status_code}")
     else:
-        st.warning("Please enter some text before analyzing.")
+        st.warning("Please upload a PDF file before submitting.")
+
+        
