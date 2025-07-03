@@ -1,25 +1,29 @@
+# streamlit.py
+
 import streamlit as st
 import requests
 
 st.set_page_config(page_title="Resume Reviewer", page_icon="📄")
+st.title("LLM Resume Reviewer")
 
-st.title("PDF Uploader and Submitter")
+# 1. Text input for API key
+api_key = st.text_input("Enter your Google GenAI API Key", type="password")
 
-# 1. Upload PDF
-uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+# 2. File uploader for PDF
+uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
 
-# 2. Submit Button
-if st.button("Submit"):
-    if uploaded_file is not None:
-        # Read the file as bytes
+if uploaded_file and api_key:
+    if st.button("Submit"):
         files = {"file": (uploaded_file.name, uploaded_file, "application/pdf")}
-        # Send POST request to FastAPI backend
-        response = requests.post("http://localhost:8000/post-endpoint", files=files)
-        if response.status_code == 200:
-            st.success(response.json().get("message", "Success!"))
+        data = {"api_key": api_key}
+        # Send both file and api_key to FastAPI backend
+        response = requests.post(
+            "http://localhost:8000/review-resume",
+            files=files,
+            data=data
+        )
+        if response.ok:
+            st.success("File uploaded and processed!")
+            st.write(response.json()["content"])
         else:
-            st.error(f"Error: {response.status_code}")
-    else:
-        st.warning("Please upload a PDF file before submitting.")
-
-        
+            st.error(f"Error: {response.text}")
