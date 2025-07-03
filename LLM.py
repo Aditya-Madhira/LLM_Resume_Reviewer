@@ -1,22 +1,24 @@
+# LLM.py
 import google.generativeai as genai
 
 class GoogleLLM:
-    def __init__(self, api_key: str, system_prompt: str = ""):
+    def __init__(self, api_key: str):
         self.api_key = api_key
-        self.system_prompt = system_prompt
+        # Hardcoded system prompt for all reviews
+        self.system_prompt = (
+            "You are an expert career coach. Review the following resume and provide detailed feedback "
+            "on formatting, structure, grammar, and content, including actionable suggestions to improve impact:\n\n"
+            "{resume_text}"
+        )
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-pro')  # or another model name
+        self.model = genai.GenerativeModel('gemini-2.5-pro')
 
-    def set_system_prompt(self, prompt: str):
-        self.system_prompt = prompt
-
-    def generate(self, user_input: str) -> str:
-        # Combine system prompt and user input
-        prompt = self.system_prompt + "\n" + user_input if self.system_prompt else user_input
+    def generate(self, resume_text: str) -> str:
+        # Format the prompt with the resume text
+        prompt = self.system_prompt.format(resume_text=resume_text)
         try:
             response = self.model.generate_content(prompt)
             return response.text
         except Exception as e:
-            return f"Error generating response: {e}"
-
-
+            # Propagate as runtime error for FastAPI to handle
+            raise RuntimeError(f"Error generating response: {e}")

@@ -1,5 +1,4 @@
 # streamlit.py
-
 import streamlit as st
 import requests
 
@@ -16,14 +15,16 @@ if uploaded_file and api_key:
     if st.button("Submit"):
         files = {"file": (uploaded_file.name, uploaded_file, "application/pdf")}
         data = {"api_key": api_key}
-        # Send both file and api_key to FastAPI backend
-        response = requests.post(
-            "http://localhost:8000/review-resume",
-            files=files,
-            data=data
-        )
-        if response.ok:
-            st.success("File uploaded and processed!")
-            st.write(response.json()["content"])
-        else:
-            st.error(f"Error: {response.text}")
+        try:
+            response = requests.post(
+                "http://localhost:8000/resume-review",
+                files=files,
+                data=data,
+                timeout=60
+            )
+            response.raise_for_status()
+            review = response.json().get("content", "")
+            st.success("Review generated successfully!")
+            st.write(review)
+        except requests.exceptions.RequestException as e:
+            st.error(f"Error communicating with backend: {e}")
