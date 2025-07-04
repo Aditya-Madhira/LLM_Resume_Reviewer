@@ -1,0 +1,6 @@
+streamlit
+requests
+fastapi
+uvicorn
+PyPDF2
+google-generativeai

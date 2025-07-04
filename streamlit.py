@@ -16,14 +16,15 @@ if uploaded_file and api_key:
         files = {"file": (uploaded_file.name, uploaded_file, "application/pdf")}
         data = {"api_key": api_key}
         try:
-            response = requests.post(
-                "http://localhost:8000/resume-review",
-                files=files,
-                data=data,
-                timeout=60
-            )
-            response.raise_for_status()
-            review = response.json().get("content", "")
+            with st.spinner("Generating review..."):
+                response = requests.post(
+                    "http://localhost:8000/resume-review",
+                    files=files,
+                    data=data,
+                    timeout=60
+                )
+                response.raise_for_status()
+                review = response.json().get("content", "")
             st.success("Review generated successfully!")
             st.write(review)
         except requests.exceptions.RequestException as e:

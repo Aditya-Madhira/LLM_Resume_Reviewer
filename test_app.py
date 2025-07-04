@@ -1,7 +1,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from backend import app  # Assuming your FastAPI app is in 'backend.py'
+from fast_api import app  # Assuming your FastAPI app is in 'backend.py'
 from unittest.mock import patch, MagicMock
 from io import BytesIO
 

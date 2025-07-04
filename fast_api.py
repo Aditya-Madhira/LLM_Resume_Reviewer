@@ -3,7 +3,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from PyPDF2 import PdfReader
 from io import BytesIO
-from LLM import GoogleLLM
+from LLM_logic import GoogleLLM
 
 app = FastAPI()
 
