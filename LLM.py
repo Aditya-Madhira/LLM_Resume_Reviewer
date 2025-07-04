@@ -11,7 +11,7 @@ class GoogleLLM:
             "{resume_text}"
         )
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-pro')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
 
     def generate(self, resume_text: str) -> str:
         # Format the prompt with the resume text
